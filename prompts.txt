@@ -1,0 +1,1 @@
+Open Brave Browser (DO NOT OPEN ANY OTHER BROWSERS), navigate to Linkedin. I should be logged in already. I want you to search and find 5 people with financial background living in Toronto and input the data into an Excel sheet. I have Excel installed, as you can see on my dock.
