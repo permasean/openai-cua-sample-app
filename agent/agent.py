@@ -6,6 +6,7 @@ from utils import (
     sanitize_message,
     check_blocklisted_url,
 )
+from extensions.token_tracker import TokenTracker
 import json
 from typing import Callable
 
@@ -31,6 +32,7 @@ class Agent:
         self.debug = False
         self.show_images = False
         self.acknowledge_safety_check_callback = acknowledge_safety_check_callback
+        self.token_tracker = TokenTracker()
 
         if computer:
             dimensions = computer.get_dimensions()
@@ -131,6 +133,17 @@ class Agent:
             )
             self.debug_print(response)
 
+            # Track token usage if available in response
+            if "usage" in response:
+                self.token_tracker.add_usage(self.model, response["usage"])
+                if self.print_steps:
+                    usage = self.token_tracker.get_current_usage()
+                    print(f"\nToken Usage:")
+                    print(f"Prompt tokens: {usage['prompt_tokens']}")
+                    print(f"Completion tokens: {usage['completion_tokens']}")
+                    print(f"Total tokens: {usage['total_tokens']}")
+                    print(f"Estimated cost: ${usage['cost']:.4f}\n")
+
             if "output" not in response and self.debug:
                 print(response)
                 raise ValueError("No output from model")
@@ -140,3 +153,11 @@ class Agent:
                     new_items += self.handle_item(item)
 
         return new_items
+
+    def save_token_usage(self, filename: str = "token_usage.json") -> None:
+        """Save token usage history to a file."""
+        self.token_tracker.save_history(filename)
+
+    def load_token_usage(self, filename: str = "token_usage.json") -> None:
+        """Load token usage history from a file."""
+        self.token_tracker.load_history(filename)
