@@ -30,8 +30,8 @@ class TokenTracker:
             # If usage is a dict with total_tokens, estimate prompt/completion split
             if "total_tokens" in usage and usage["total_tokens"] > 0:
                 total_tokens = usage["total_tokens"]
-                # Estimate 10% prompt, 90% completion as a rough approximation
-                prompt_tokens = int(total_tokens * 0.1)
+                # Estimate 80% prompt, 20% completion since screenshots are part of the prompt
+                prompt_tokens = int(total_tokens * 0.8)
                 completion_tokens = total_tokens - prompt_tokens
             else:
                 # Use actual values if available
@@ -41,7 +41,7 @@ class TokenTracker:
         else:
             # If usage is just a number, treat it as total_tokens
             total_tokens = int(usage)
-            prompt_tokens = int(total_tokens * 0.1)
+            prompt_tokens = int(total_tokens * 0.8)
             completion_tokens = total_tokens - prompt_tokens
         
         # Calculate cost
